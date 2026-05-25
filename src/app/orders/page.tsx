@@ -1,29 +1,28 @@
-import React from 'react';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { FolderHeart, Calendar, CreditCard, ChevronRight, Inbox } from 'lucide-react';
-import { getMyOrdersAction } from '@/actions/orderActions';
-import { getAuthUser } from '@/lib/auth';
+import { getMyOrdersAction } from "@/actions/orderActions";
+import { getAuthUser } from "@/lib/auth";
+import { Calendar, ChevronRight, CreditCard, Inbox } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: 'My Orders | KANSO Curation',
-  description: 'Review your order fulfillment history and COD schedules.',
+  title: "My Orders | KANSO Curation",
+  description: "Review your order fulfillment history and COD schedules.",
 };
 
 export default async function MyOrdersPage() {
   const user = await getAuthUser();
 
   if (!user) {
-    redirect('/auth/login');
+    redirect("/auth/login");
   }
 
   const res = await getMyOrdersAction();
   const orders = res.success && res.orders ? res.orders : [];
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(val);
   };
 
@@ -31,8 +30,12 @@ export default async function MyOrdersPage() {
     <div className="flex flex-col gap-12 w-full animate-fade-up font-sans">
       {/* Title */}
       <div className="flex flex-col gap-2">
-        <span className="text-[10px] tracking-[0.3em] font-bold text-stone-400 uppercase">Curation History</span>
-        <h1 className="font-serif text-3xl md:text-4xl font-light text-charcoal tracking-tight">My Orders</h1>
+        <span className="text-[10px] tracking-[0.3em] font-bold text-stone-400 uppercase">
+          Curation History
+        </span>
+        <h1 className="font-serif text-3xl md:text-4xl font-light text-charcoal tracking-tight">
+          My Orders
+        </h1>
       </div>
 
       {orders.length > 0 ? (
@@ -46,17 +49,24 @@ export default async function MyOrdersPage() {
                 <span className="font-serif text-sm font-semibold text-charcoal">
                   Order #{order.id.slice(-6).toUpperCase()}
                 </span>
-                
+
                 {/* Meta details row */}
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1.5">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-stone-300" />
-                    {new Date(order.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    {new Date(order.createdAt).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
                   </span>
                   <span className="hidden md:inline text-stone-300">•</span>
                   <span className="flex items-center gap-1">
                     <CreditCard className="w-3.5 h-3.5 text-stone-300" />
-                    Method: {order.paymentMethod === 'WhatsApp' ? 'WhatsApp Preorder' : 'Cash on Delivery'}
+                    Method:{" "}
+                    {order.paymentMethod === "WhatsApp"
+                      ? "WhatsApp Preorder"
+                      : "Cash on Delivery"}
                   </span>
                 </div>
               </div>
@@ -71,15 +81,15 @@ export default async function MyOrdersPage() {
                     {/* Status badge */}
                     <span
                       className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                        order.status === 'Pending'
-                          ? 'bg-yellow-50 text-yellow-800'
-                          : order.status === 'Processing'
-                          ? 'bg-blue-50 text-blue-800'
-                          : order.status === 'Shipped'
-                          ? 'bg-orange-50 text-orange-800'
-                          : order.status === 'Delivered'
-                          ? 'bg-emerald-50 text-emerald-800'
-                          : 'bg-red-50 text-red-700'
+                        order.status === "Pending"
+                          ? "bg-yellow-50 text-yellow-800"
+                          : order.status === "Processing"
+                            ? "bg-blue-50 text-blue-800"
+                            : order.status === "Shipped"
+                              ? "bg-orange-50 text-orange-800"
+                              : order.status === "Delivered"
+                                ? "bg-emerald-50 text-emerald-800"
+                                : "bg-red-50 text-red-700"
                       }`}
                     >
                       {order.status}
@@ -88,10 +98,12 @@ export default async function MyOrdersPage() {
                     {/* Paid status badge */}
                     <span
                       className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                        order.isPaid ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-600'
+                        order.isPaid
+                          ? "bg-emerald-50 text-emerald-800"
+                          : "bg-red-50 text-red-600"
                       }`}
                     >
-                      {order.isPaid ? 'Paid' : 'Unpaid'}
+                      {order.isPaid ? "Paid" : "Unpaid"}
                     </span>
                   </div>
                 </div>
@@ -107,9 +119,12 @@ export default async function MyOrdersPage() {
           <div className="w-16 h-16 rounded-full bg-sand flex items-center justify-center text-stone-400">
             <Inbox className="w-6 h-6" />
           </div>
-          <h2 className="font-serif text-xl font-semibold text-charcoal">No order logs found</h2>
+          <h2 className="font-serif text-xl font-semibold text-charcoal">
+            No order logs found
+          </h2>
           <p className="font-sans text-xs text-stone-400 max-w-xs leading-relaxed font-light">
-            You haven't placed any orders with KANSO yet. Settle curations in the checkout panel to load history.
+            You haven't placed any orders with KANSO yet. Settle curations in
+            the checkout panel to load history.
           </p>
           <div className="pt-2">
             <Link
