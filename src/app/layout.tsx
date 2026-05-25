@@ -40,7 +40,10 @@ export default async function RootLayout({
       className={`${playfair.variable} ${outfit.variable} scroll-smooth antialiased`}
       suppressHydrationWarning
     >
-      <body className="font-sans bg-background text-foreground flex flex-col min-h-screen">
+      <body
+        className="font-sans bg-background text-foreground flex flex-col min-h-screen"
+        suppressHydrationWarning
+      >
         {/* Subtle cinematic overlay */}
         <div className="noise-overlay" />
 
