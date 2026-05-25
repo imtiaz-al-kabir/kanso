@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-primary: #C2B29F;
+  --color-primary-dark: #A89885;
+  --color-charcoal: #1C1A17;
+  --color-sand: #FAF9F6;
+  --color-alabaster: #F5F3EF;
+  --color-sage: #8A9A86;
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-outfit), var(--font-sans-fallback), sans-serif;
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:root {
+  --background: #F5F3EF;
+  --foreground: #1C1A17;
+  --font-sans-fallback: 'Outfit', 'Inter', sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+
+/* Premium Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F3EF;
+}
+::-webkit-scrollbar-thumb {
+  background: #C2B29F;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A89885;
+}
+
+/* Cinematic Noise overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  content: "";
+  opacity: 0.025;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Luxury Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(250, 249, 246, 0.72);
+  backdrop-filter: blur(16px) saturate(110%);
+  -webkit-backdrop-filter: blur(16px) saturate(110%);
+  border: 1px solid rgba(28, 26, 23, 0.06);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.015);
+}
+
+.glass-panel-dark {
+  background: rgba(28, 26, 23, 0.85);
+  backdrop-filter: blur(16px) saturate(110%);
+  -webkit-backdrop-filter: blur(16px) saturate(110%);
+  border: 1px solid rgba(250, 249, 246, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Glass inputs focus styles */
+.glass-input {
+  background: rgba(250, 249, 246, 0.4);
+  border: 1px solid rgba(28, 26, 23, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-input:focus {
+  background: rgba(250, 249, 246, 0.95);
+  border-color: #1C1A17;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(194, 178, 159, 0.2);
+}
+
+/* Custom premium hover underline */
+.hover-underline {
+  position: relative;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transform-origin: bottom right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Japandi Vignette Hero Shadow */
+.vignette-bottom {
+  background: linear-gradient(to top, rgba(28, 26, 23, 0.6) 0%, rgba(28, 26, 23, 0) 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #1C1A17 0%, #4A463F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
