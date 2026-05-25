@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import User from '@/models/User';
 import { hashPassword, comparePassword, signToken, setAuthCookie, removeAuthCookie } from '@/lib/auth';
@@ -16,9 +17,10 @@ export async function loginAction(values: any) {
     }
 
     const { email, password } = validated.data;
+    const normalizedEmail = email.trim().toLowerCase();
 
     // Check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return { success: false, error: 'Invalid email or password' };
     }
@@ -37,6 +39,7 @@ export async function loginAction(values: any) {
     });
 
     await setAuthCookie(token);
+    revalidatePath('/', 'layout');
 
     return {
       success: true,
@@ -47,9 +50,14 @@ export async function loginAction(values: any) {
         role: user.role,
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Login action error:', error);
-    return { success: false, error: error.message || 'An error occurred during login' };
+    const message =
+      error instanceof Error ? error.message : 'An error occurred during login';
+    if (message.includes('ECONNREFUSED') || message.includes('MongoServerSelectionError')) {
+      return { success: false, error: 'Cannot reach the database. Please try again shortly.' };
+    }
+    return { success: false, error: message };
   }
 }
 
@@ -64,9 +72,10 @@ export async function registerAction(values: any) {
     }
 
     const { name, email, password } = validated.data;
+    const normalizedEmail = email.trim().toLowerCase();
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return { success: false, error: 'User with this email already exists' };
     }
@@ -81,7 +90,7 @@ export async function registerAction(values: any) {
 
     const newUser = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       role,
     });

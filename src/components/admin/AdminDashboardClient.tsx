@@ -1,10 +1,9 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { DollarSign, ShoppingBag, Box, Users, AlertTriangle, ArrowUpRight, TrendingUp } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ShoppingBag, Box, Users, AlertTriangle, TrendingUp } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 import {
-  ResponsiveContainer,
   AreaChart,
   Area,
   XAxis,
@@ -12,6 +11,80 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
+
+const CHART_HEIGHT = 280;
+
+type ChartPoint = { name: string; Sales: number; Orders: number };
+
+function SalesAreaChart({ data }: { data: ChartPoint[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const updateSize = () => {
+      const { width } = el.getBoundingClientRect();
+      if (width > 0) {
+        setSize({ width: Math.floor(width), height: CHART_HEIGHT });
+      }
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full min-w-0"
+      style={{ height: CHART_HEIGHT }}
+    >
+      {size ? (
+        <AreaChart
+          width={size.width}
+          height={size.height}
+          data={data}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+        >
+          <defs>
+            <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#C2B29F" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#C2B29F" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(28,26,23,0.03)" />
+          <XAxis dataKey="name" stroke="#A89885" strokeWidth={0.5} tickLine={false} />
+          <YAxis stroke="#A89885" strokeWidth={0.5} tickLine={false} />
+          <Tooltip
+            contentStyle={{
+              background: 'rgba(28,26,23,0.9)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#FAF9F6',
+            }}
+            itemStyle={{ color: '#C2B29F' }}
+          />
+          <Area
+            type="monotone"
+            dataKey="Sales"
+            stroke="#C2B29F"
+            strokeWidth={2}
+            fillOpacity={1}
+            fill="url(#colorSales)"
+          />
+        </AreaChart>
+      ) : (
+        <div className="h-full w-full flex items-center justify-center text-stone-400 font-sans text-xs">
+          Loading chart…
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface AdminDashboardClientProps {
   stats: {
@@ -23,24 +96,10 @@ interface AdminDashboardClientProps {
     lowStockCount: number;
   };
   lowStock: { id: string; name: string; countInStock: number; price: number; slug: string }[];
-  chartData: { name: string; Sales: number; Orders: number }[];
+  chartData: ChartPoint[];
 }
 
 export function AdminDashboardClient({ stats, lowStock, chartData }: AdminDashboardClientProps) {
-  // Format currencies beautifully
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(val);
-  };
-
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
     <div className="flex flex-col gap-8 font-sans animate-fade-up">
       {/* 1. Page Title */}
@@ -55,8 +114,8 @@ export function AdminDashboardClient({ stats, lowStock, chartData }: AdminDashbo
         <div className="glass-panel p-5 rounded-2xl flex flex-col gap-3 shadow-xs">
           <div className="flex justify-between items-start">
             <span className="text-[10px] uppercase font-bold text-stone-400">Total Sales</span>
-            <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-charcoal shrink-0">
-              <DollarSign className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-charcoal shrink-0 font-serif font-bold text-sm">
+              ৳
             </div>
           </div>
           <div className="flex flex-col">
@@ -132,47 +191,12 @@ export function AdminDashboardClient({ stats, lowStock, chartData }: AdminDashbo
           <div className="flex justify-between items-center border-b border-charcoal/5 pb-3">
             <h3 className="font-serif text-sm font-semibold text-charcoal">Monthly Sales Curve</h3>
             <span className="text-[9px] font-bold uppercase tracking-widest text-stone-400 bg-sand px-2.5 py-1 rounded">
-              Revenue ($)
+              Revenue (৳)
             </span>
           </div>
 
-          <div className="h-[280px] w-full min-w-0 text-xs font-medium">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#C2B29F" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#C2B29F" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(28,26,23,0.03)" />
-                  <XAxis dataKey="name" stroke="#A89885" strokeWidth={0.5} tickLine={false} />
-                  <YAxis stroke="#A89885" strokeWidth={0.5} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      background: 'rgba(28,26,23,0.9)',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: '#FAF9F6',
-                    }}
-                    itemStyle={{ color: '#C2B29F' }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="Sales"
-                    stroke="#C2B29F"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorSales)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-stone-400 font-sans text-xs">
-                Rendering studio insights...
-              </div>
-            )}
+          <div className="w-full min-w-0 text-xs font-medium">
+            <SalesAreaChart data={chartData} />
           </div>
         </div>
 
@@ -195,7 +219,7 @@ export function AdminDashboardClient({ stats, lowStock, chartData }: AdminDashbo
                   <div className="flex flex-col gap-0.5 min-w-0">
                     <span className="text-xs font-bold text-charcoal truncate">{prod.name}</span>
                     <span className="text-[9px] text-stone-400 font-bold uppercase tracking-wider">
-                      Price: ${prod.price}
+                      Price: {formatCurrency(prod.price)}
                     </span>
                   </div>
                   

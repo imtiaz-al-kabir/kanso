@@ -160,46 +160,74 @@ export function Navbar({ user }: NavbarProps) {
 
               {/* User / Auth */}
               {user ? (
-                <div className="relative group hidden md:block">
-                  <button className="flex items-center gap-1.5 p-2 text-sand/80 hover:text-sand transition-colors cursor-pointer">
+                <>
+                  <Link
+                    href="/profile"
+                    className="md:hidden p-2 text-sand/80 hover:text-sand transition-colors touch-manipulation"
+                    aria-label="My profile"
+                  >
                     <div className="w-7 h-7 rounded-full bg-primary text-charcoal flex items-center justify-center font-bold text-xs font-sans">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-xs font-bold max-w-[60px] truncate hidden lg:block">{user.name.split(' ')[0]}</span>
-                    <ChevronDown className="w-3.5 h-3.5 hidden lg:block" />
-                  </button>
-                  {/* Dropdown */}
-                  <div className="absolute right-0 pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0 z-50">
-                    <div className="bg-white rounded-xl shadow-xl border border-stone-100 py-2 flex flex-col text-xs font-semibold text-stone-600">
-                      <div className="px-4 py-2 border-b border-stone-100 mb-1">
-                        <span className="text-[10px] uppercase tracking-widest text-stone-400">Signed in as</span>
-                        <p className="text-charcoal font-bold truncate">{user.email}</p>
+                  </Link>
+                  <div className="relative group hidden md:block">
+                    <button
+                      type="button"
+                      className="flex items-center gap-1.5 p-2 text-sand/80 hover:text-sand transition-colors cursor-pointer"
+                      aria-label="Account menu"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-primary text-charcoal flex items-center justify-center font-bold text-xs font-sans">
+                        {user.name.charAt(0).toUpperCase()}
                       </div>
-                      {user.role === 'admin' && (
-                        <Link href="/admin" className="px-4 py-2.5 hover:bg-charcoal/5 hover:text-charcoal flex items-center gap-2">
-                          <Shield className="w-3.5 h-3.5 text-primary" />
-                          Admin Dashboard
+                      <span className="text-xs font-bold max-w-[60px] truncate hidden lg:block">{user.name.split(' ')[0]}</span>
+                      <ChevronDown className="w-3.5 h-3.5 hidden lg:block" />
+                    </button>
+                    {/* Dropdown */}
+                    <div className="absolute right-0 pt-2 w-52 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0 z-50">
+                      <div className="bg-white rounded-xl shadow-xl border border-stone-100 py-2 flex flex-col text-xs font-semibold text-stone-600">
+                        <div className="px-4 py-2 border-b border-stone-100 mb-1">
+                          <span className="text-[10px] uppercase tracking-widest text-stone-400">Signed in as</span>
+                          <p className="text-charcoal font-bold truncate">{user.email}</p>
+                        </div>
+                        <Link href="/profile" className="px-4 py-2.5 hover:bg-charcoal/5 hover:text-charcoal">
+                          My Profile
                         </Link>
-                      )}
-                      <Link href="/orders" className="px-4 py-2.5 hover:bg-charcoal/5 hover:text-charcoal">My Orders</Link>
-                      <hr className="border-stone-100 my-1" />
-                      <button
-                        onClick={handleLogout}
-                        className="px-4 py-2.5 hover:bg-red-50 hover:text-red-600 text-left w-full cursor-pointer"
-                      >
-                        Logout
-                      </button>
+                        {user.role === 'admin' && (
+                          <Link href="/admin" className="px-4 py-2.5 hover:bg-charcoal/5 hover:text-charcoal flex items-center gap-2">
+                            <Shield className="w-3.5 h-3.5 text-primary" />
+                            Admin Dashboard
+                          </Link>
+                        )}
+                        <Link href="/orders" className="px-4 py-2.5 hover:bg-charcoal/5 hover:text-charcoal">My Orders</Link>
+                        <hr className="border-stone-100 my-1" />
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="px-4 py-2.5 hover:bg-red-50 hover:text-red-600 text-left w-full cursor-pointer"
+                        >
+                          Logout
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </>
               ) : (
-                <Link
-                  href="/auth/login"
-                  className="hidden md:flex items-center gap-1.5 bg-primary text-charcoal px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-stone-200 transition-colors shrink-0"
-                >
-                  <User className="w-3.5 h-3.5" />
-                  Login
-                </Link>
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="md:hidden p-2 text-sand/80 hover:text-sand transition-colors touch-manipulation"
+                    aria-label="Sign in"
+                  >
+                    <User className="w-5 h-5" />
+                  </Link>
+                  <Link
+                    href="/auth/login"
+                    className="hidden md:flex items-center gap-1.5 bg-primary text-charcoal px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-stone-200 transition-colors shrink-0"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    Login
+                  </Link>
+                </>
               )}
             </div>
           </div>
@@ -392,13 +420,22 @@ export function Navbar({ user }: NavbarProps) {
                   </button>
                 </div>
               ) : (
-                <Link
-                  href="/auth/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full py-3 rounded-lg bg-charcoal text-sand text-xs font-bold uppercase tracking-widest text-center hover:bg-stone-800 transition-colors"
-                >
-                  Sign In / Register
-                </Link>
+                <>
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full py-3 rounded-lg bg-charcoal text-sand text-xs font-bold uppercase tracking-widest text-center hover:bg-stone-800 transition-colors touch-manipulation"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full py-3 rounded-lg border border-charcoal/15 text-charcoal text-xs font-bold uppercase tracking-widest text-center hover:bg-charcoal/5 transition-colors touch-manipulation"
+                  >
+                    Create Account
+                  </Link>
+                </>
               )}
             </div>
           </div>

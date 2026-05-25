@@ -55,7 +55,16 @@ export async function getSessionToken(): Promise<string | undefined> {
   return cookieStore.get(COOKIE_NAME)?.value;
 }
 
-export async function getAuthUser(): Promise<{ id: string; name: string; email: string; role: string } | null> {
+export type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatar?: string;
+  phone?: string;
+};
+
+export async function getAuthUser(): Promise<AuthUser | null> {
   try {
     const token = await getSessionToken();
     if (!token) return null;
@@ -72,6 +81,8 @@ export async function getAuthUser(): Promise<{ id: string; name: string; email: 
       name: (user as any).name,
       email: (user as any).email,
       role: (user as any).role,
+      avatar: (user as any).avatar || '',
+      phone: (user as any).phone || '',
     };
   } catch (error) {
     console.error('Error fetching auth user:', error);

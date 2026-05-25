@@ -2,8 +2,9 @@
 
 import React, { useState, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Edit3, Trash2, Box, Info, Check, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit3, Trash2, Box, Check } from 'lucide-react';
 import { useToast } from '@/providers/ToastProvider';
+import { formatCurrency } from '@/lib/utils';
 import { createProductAction, updateProductAction, deleteProductAction } from '@/actions/productActions';
 import ImageUpload from './ImageUpload';
 import Button from '../ui/Button';
@@ -207,7 +208,7 @@ export function ProductManager({ products, categories }: ProductManagerProps) {
                       {prod.category ? prod.category.name : <span className="italic text-stone-400">None</span>}
                     </td>
                     <td className="p-4 font-sans text-xs font-bold text-charcoal">
-                      ${prod.price.toFixed(2)}
+                      {formatCurrency(prod.price)}
                     </td>
                     <td className="p-4">
                       <span
@@ -303,7 +304,7 @@ export function ProductManager({ products, categories }: ProductManagerProps) {
             </div>
 
             <Input
-              label="Price ($)"
+              label="Price (৳)"
               type="number"
               placeholder="890"
               value={price || ''}
@@ -312,7 +313,7 @@ export function ProductManager({ products, categories }: ProductManagerProps) {
             />
 
             <Input
-              label="Original Price ($) - Optional"
+              label="Original Price (৳) - Optional"
               type="number"
               placeholder="1100"
               value={originalPrice || ''}

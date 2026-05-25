@@ -11,6 +11,23 @@ export const RegisterSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters long'),
 });
 
+export const ProfileUpdateSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters long'),
+  avatar: z.string().optional(),
+  phone: z.string().optional(),
+});
+
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(6, 'New password must be at least 6 characters'),
+    confirmPassword: z.string().min(6, 'Please confirm your new password'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'New passwords do not match',
+    path: ['confirmPassword'],
+  });
+
 export const ProductSchema = z.object({
   name: z.string().min(2, 'Product name must be at least 2 characters long'),
   description: z.string().min(10, 'Description must be at least 10 characters long'),

@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import { uploadImage } from '@/lib/cloudinary';
+import { uploadImage } from '@/lib/cloudinary.server';
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Authorize user (must be an admin)
     const auth = await getAuthUser();
-    if (!auth || auth.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 401 });
+    if (!auth) {
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
-    // 2. Parse form data
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
     const folder = (formData.get('folder') as string) || 'japandi_luxury';
+
+    const isAvatarUpload = folder === 'avatars';
+    if (!isAvatarUpload && auth.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 401 });
+    }
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });

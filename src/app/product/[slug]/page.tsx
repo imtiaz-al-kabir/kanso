@@ -87,8 +87,11 @@ export default async function ProductPage({ params }: PageProps) {
           name: m.name,
           slug: m.slug,
           price: m.price,
+          originalPrice: m.originalPrice || null,
           images: m.images,
           rating: m.rating,
+          categoryName: m.category?.name || 'Store',
+          countInStock: m.countInStock || 10,
         }));
 
       const mockReviews = [

@@ -98,6 +98,7 @@ export async function getProductBySlugAction(slug: string) {
       category: (product as any).category._id,
       _id: { $ne: (product as any)._id },
     })
+      .populate('category', 'name slug')
       .limit(4)
       .lean();
 
@@ -135,8 +136,12 @@ export async function getProductBySlugAction(slug: string) {
         name: p.name,
         slug: p.slug,
         price: p.price,
+        originalPrice: p.originalPrice || null,
         images: p.images,
         rating: p.rating || 0,
+        numReviews: p.numReviews || 0,
+        categoryName: p.category ? p.category.name : 'Store',
+        countInStock: p.countInStock || 10,
       })),
       reviews: reviews.map((r: any) => ({
         id: r._id.toString(),

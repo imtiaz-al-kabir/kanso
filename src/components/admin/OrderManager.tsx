@@ -2,8 +2,9 @@
 
 import React, { useState, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { FolderHeart, Check, MessageSquare, Truck, DollarSign, Calendar, RefreshCw, XCircle } from 'lucide-react';
+import { FolderHeart, MessageSquare, Calendar, RefreshCw } from 'lucide-react';
 import { useToast } from '@/providers/ToastProvider';
+import { formatCurrency } from '@/lib/utils';
 import { updateOrderStatusAction, updateOrderPaymentAction } from '@/actions/orderActions';
 import Button from '../ui/Button';
 
@@ -103,18 +104,13 @@ export function OrderManager({ orders }: OrderManagerProps) {
 
   // WhatsApp Follow-up Integration for Merchants!
   const triggerWhatsAppFollowUp = (order: OrderItem) => {
-    const message = `*KANSO STORE SHIPPING UPDATE*%0A%0AHello *${order.shippingAddress.fullName}*,%0A%0AThis is KANSO Support reaching out regarding your curation order *%23${order.id}*.%0A%0A*Shipment Status:* ${order.status}%0A*Items Breakdown:*%0A${order.items.map(i => `• ${i.name} (x${i.quantity})`).join('%0A')}%0A*Total Invoice:* $${order.totalPrice.toFixed(2)}%0A%0A_If you need any adjustments or express shipment scheduling, please let us know here!_`;
+    const message = `*KANSO STORE SHIPPING UPDATE*%0A%0AHello *${order.shippingAddress.fullName}*,%0A%0AThis is KANSO Support reaching out regarding your curation order *%23${order.id}*.%0A%0A*Shipment Status:* ${order.status}%0A*Items Breakdown:*%0A${order.items.map(i => `• ${i.name} (x${i.quantity})`).join('%0A')}%0A*Total Invoice:* ৳${Math.round(order.totalPrice).toLocaleString('en-IN')}%0A%0A_If you need any adjustments or express shipment scheduling, please let us know here!_`;
     
     const url = `https://wa.me/${order.shippingAddress.phone.replace(/[^0-9]/g, '')}?text=${message}`;
     window.open(url, '_blank');
   };
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(val);
-  };
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 font-sans animate-fade-up">

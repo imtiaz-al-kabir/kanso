@@ -9,6 +9,7 @@ import { useToast } from '@/providers/ToastProvider';
 import { createOrderAction } from '@/actions/orderActions';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { formatCurrency } from '@/lib/utils';
 
 const WHATSAPP_PHONE = '1234567890'; // Merchant phone number (change in config)
 
@@ -86,10 +87,10 @@ export default function CheckoutPage() {
       // WhatsApp Integration Flow
       if (paymentMethod === 'WhatsApp') {
         const orderSummary = order.items
-          .map((i: any) => `• ${i.name} (Qty: ${i.quantity}${i.variant ? `, Style: ${i.variant}` : ''}) - $${i.price}`)
+          .map((i: any) => `• ${i.name} (Qty: ${i.quantity}${i.variant ? `, Style: ${i.variant}` : ''}) - ৳${i.price}`)
           .join('%0A');
 
-        const message = `*KANSO LUXURY PREORDER*%0A%0A*Order Reference:* %23${order.id}%0A*Customer:* ${fullName}%0A*Phone:* ${phone}%0A*Shipping Address:* ${address}, ${city}, ${postalCode}, ${country}%0A%0A*Curation Details:*%0A${orderSummary}%0A%0A*Total Amount:* $${order.totalPrice.toFixed(2)}%0A*Payment Channel:* WhatsApp Preorder Confirmation%0A%0A_Please reply to confirm details and initialize delivery!_`;
+        const message = `*KANSO LUXURY PREORDER*%0A%0A*Order Reference:* %23${order.id}%0A*Customer:* ${fullName}%0A*Phone:* ${phone}%0A*Shipping Address:* ${address}, ${city}, ${postalCode}, ${country}%0A%0A*Curation Details:*%0A${orderSummary}%0A%0A*Total Amount:* ৳${Math.round(order.totalPrice).toLocaleString('en-IN')}%0A*Payment Channel:* WhatsApp Preorder Confirmation%0A%0A_Please reply to confirm details and initialize delivery!_`;
 
         const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${message}`;
         
@@ -132,7 +133,7 @@ export default function CheckoutPage() {
         ) : (
           <div className="bg-sand/75 rounded-2xl p-4 border border-charcoal/5 text-xs text-stone-500 font-light leading-relaxed flex flex-col gap-2">
             <span className="text-[10px] uppercase font-bold text-stone-400">Cash on Delivery (COD)</span>
-            Your shipment will be prepared for packaging. You will settle the bill of <span className="font-bold text-charcoal">${checkoutSuccess.totalPrice.toFixed(2)}</span> at the time of delivery.
+            Your shipment will be prepared for packaging. You will settle the bill of <span className="font-bold text-charcoal">{formatCurrency(checkoutSuccess.totalPrice)}</span> at the time of delivery.
           </div>
         )}
 
@@ -141,9 +142,9 @@ export default function CheckoutPage() {
             <button
               onClick={() => {
                 const orderSummary = checkoutSuccess.items
-                  .map((i: any) => `• ${i.name} (Qty: ${i.quantity}${i.variant ? `, Style: ${i.variant}` : ''}) - $${i.price}`)
+                  .map((i: any) => `• ${i.name} (Qty: ${i.quantity}${i.variant ? `, Style: ${i.variant}` : ''}) - ৳${i.price}`)
                   .join('%0A');
-                const message = `*KANSO LUXURY PREORDER*%0A%0A*Order Reference:* %23${checkoutSuccess.id}%0A*Customer:* ${fullName}%0A*Phone:* ${phone}%0A*Shipping Address:* ${address}, ${city}, ${postalCode}, ${country}%0A%0A*Curation Details:*%0A${orderSummary}%0A%0A*Total Amount:* $${checkoutSuccess.totalPrice.toFixed(2)}%0A*Payment Channel:* WhatsApp Preorder Confirmation%0A%0A_Please reply to confirm details and initialize delivery!_`;
+                const message = `*KANSO LUXURY PREORDER*%0A%0A*Order Reference:* %23${checkoutSuccess.id}%0A*Customer:* ${fullName}%0A*Phone:* ${phone}%0A*Shipping Address:* ${address}, ${city}, ${postalCode}, ${country}%0A%0A*Curation Details:*%0A${orderSummary}%0A%0A*Total Amount:* ৳${Math.round(checkoutSuccess.totalPrice).toLocaleString('en-IN')}%0A*Payment Channel:* WhatsApp Preorder Confirmation%0A%0A_Please reply to confirm details and initialize delivery!_`;
                 window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${message}`, '_blank');
               }}
               className="w-full bg-emerald-600 text-white hover:bg-emerald-700 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
@@ -289,7 +290,7 @@ export default function CheckoutPage() {
                     <span className="text-stone-500 truncate max-w-[70%] font-medium">
                       {item.name} <span className="font-bold text-stone-400">x{item.quantity}</span>
                     </span>
-                    <span className="text-charcoal font-bold shrink-0">${(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="text-charcoal font-bold shrink-0">{formatCurrency(item.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>
@@ -300,14 +301,14 @@ export default function CheckoutPage() {
               <div className="flex flex-col gap-3 font-sans text-xs text-stone-500 font-medium">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="text-charcoal font-bold">${subtotal.toFixed(2)}</span>
+                  <span className="text-charcoal font-bold">{formatCurrency(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   {shipping === 0 ? (
                     <span className="text-primary font-bold uppercase tracking-wider">Free Shipping</span>
                   ) : (
-                    <span className="text-charcoal font-bold">${shipping.toFixed(2)}</span>
+                    <span className="text-charcoal font-bold">{formatCurrency(shipping)}</span>
                   )}
                 </div>
                 
@@ -315,7 +316,7 @@ export default function CheckoutPage() {
 
                 <div className="flex justify-between text-sm font-semibold">
                   <span className="text-charcoal">Invoice Amount</span>
-                  <span className="text-charcoal font-bold text-base">${total.toFixed(2)}</span>
+                  <span className="text-charcoal font-bold text-base">{formatCurrency(total)}</span>
                 </div>
               </div>
 

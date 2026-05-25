@@ -3,8 +3,10 @@ import { Playfair_Display, Outfit } from 'next/font/google';
 import './globals.css';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { StoreProvider } from '@/providers/StoreProvider';
+import { AuthProvider } from '@/providers/AuthProvider';
 import Navbar from '@/components/store/Navbar';
 import BottomBar from '@/components/store/BottomBar';
+import WhatsAppWidget from '@/components/store/WhatsAppWidget';
 import Footer from '@/components/store/Footer';
 import { getAuthUser } from '@/lib/auth';
 
@@ -48,15 +50,17 @@ export default async function RootLayout({
         <div className="noise-overlay" />
 
         <ToastProvider>
-          <StoreProvider>
-            {/* Standard layout blocks */}
-            <Navbar user={user} />
-            <main className="flex-1 w-full max-w-7xl mx-auto px-6 md:px-8 py-6 pb-24 md:pb-6">
-              {children}
-            </main>
-            <BottomBar />
-            <Footer />
-          </StoreProvider>
+          <AuthProvider user={user}>
+            <StoreProvider>
+              <Navbar user={user} />
+              <main className="flex-1 w-full max-w-7xl mx-auto px-6 md:px-8 py-6 pb-24 md:pb-6">
+                {children}
+              </main>
+              <BottomBar />
+              <WhatsAppWidget />
+              <Footer />
+            </StoreProvider>
+          </AuthProvider>
         </ToastProvider>
       </body>
     </html>

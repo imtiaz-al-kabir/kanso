@@ -29,6 +29,11 @@ export function proxy(request: NextRequest) {
         // Expiration check
         const isExpired = decodedPayload.exp * 1000 < Date.now();
         if (isExpired) {
+          if (isAuthPath) {
+            const response = NextResponse.next();
+            response.cookies.delete('luxury_session_token');
+            return response;
+          }
           const response = NextResponse.redirect(new URL('/auth/login', request.url));
           response.cookies.delete('luxury_session_token');
           return response;
@@ -39,13 +44,16 @@ export function proxy(request: NextRequest) {
           return NextResponse.redirect(new URL('/', request.url));
         }
 
-        // Redirect logged-in user away from /auth paths
-        if (isAuthPath) {
-          return NextResponse.redirect(new URL('/', request.url));
-        }
+        // Let /auth/* through — login page handles already-authenticated users.
+        // Redirecting here caused a loop when a cookie existed but getAuthUser() failed.
       }
     } catch (e) {
       console.error('Proxy JWT decode error:', e);
+      if (isAuthPath) {
+        const response = NextResponse.next();
+        response.cookies.delete('luxury_session_token');
+        return response;
+      }
       const response = NextResponse.redirect(new URL('/auth/login', request.url));
       response.cookies.delete('luxury_session_token');
       return response;

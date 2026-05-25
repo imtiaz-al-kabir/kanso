@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ShoppingBag, ArrowRight, Trash2, ShieldCheck, Heart } from 'lucide-react';
 import { useStore } from '@/providers/StoreProvider';
 import Button from '@/components/ui/Button';
+import { formatCurrency } from '@/lib/utils';
 
 export default function CartPage() {
   const { cart, removeFromCart, updateCartQty } = useStore();
@@ -48,7 +49,7 @@ export default function CartPage() {
                       </span>
                     )}
                     <span className="text-xs font-bold text-stone-600 sm:hidden">
-                      ${item.price}
+                      {formatCurrency(item.price)}
                     </span>
                   </div>
                 </div>
@@ -74,7 +75,7 @@ export default function CartPage() {
 
                   {/* Price */}
                   <span className="hidden sm:block font-sans text-sm font-bold text-stone-600 w-20 text-right">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {formatCurrency(item.price * item.quantity)}
                   </span>
 
                   {/* Delete button */}
@@ -97,19 +98,19 @@ export default function CartPage() {
               <div className="flex flex-col gap-3 font-sans text-xs text-stone-500 font-medium">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="text-charcoal font-bold">${subtotal.toFixed(2)}</span>
+                  <span className="text-charcoal font-bold">{formatCurrency(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   {shipping === 0 ? (
                     <span className="text-primary font-bold uppercase tracking-wider">Free Shipping</span>
                   ) : (
-                    <span className="text-charcoal font-bold">${shipping.toFixed(2)}</span>
+                    <span className="text-charcoal font-bold">{formatCurrency(shipping)}</span>
                   )}
                 </div>
                 {shipping > 0 && (
                   <p className="text-[10px] text-stone-400 font-light leading-relaxed">
-                    Spend ${(200 - subtotal).toFixed(2)} more to unlock complimentary global shipping.
+                    Spend {formatCurrency(200 - subtotal)} more to unlock complimentary global shipping.
                   </p>
                 )}
                 
@@ -117,7 +118,7 @@ export default function CartPage() {
 
                 <div className="flex justify-between text-sm font-semibold">
                   <span className="text-charcoal">Total Curation</span>
-                  <span className="text-charcoal font-bold text-base">${total.toFixed(2)}</span>
+                  <span className="text-charcoal font-bold text-base">{formatCurrency(total)}</span>
                 </div>
               </div>
 

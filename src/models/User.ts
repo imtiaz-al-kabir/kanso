@@ -23,6 +23,15 @@ const UserSchema = new Schema(
       enum: ['customer', 'admin'],
       default: 'customer',
     },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    phone: {
+      type: String,
+      default: '',
+      trim: true,
+    },
   },
   {
     timestamps: true,

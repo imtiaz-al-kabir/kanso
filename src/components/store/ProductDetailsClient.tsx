@@ -10,6 +10,8 @@ import { createReviewAction } from '@/actions/productActions';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 import Textarea from '../ui/Textarea';
+import { formatCurrency } from '@/lib/utils';
+import ProductCard from './ProductCard';
 
 interface ProductDetailsClientProps {
   product: {
@@ -26,7 +28,7 @@ interface ProductDetailsClientProps {
     rating: number;
     numReviews: number;
   };
-  related: { id: string; name: string; slug: string; price: number; images: string[]; rating: number }[];
+  related: { id: string; name: string; slug: string; price: number; originalPrice?: number | null; images: string[]; rating: number }[];
   reviews: { id: string; username: string; rating: number; comment: string; createdAt: string }[];
   user: { id: string; name: string; email: string; role: string } | null;
 }
@@ -146,14 +148,19 @@ export function ProductDetailsClient({ product, related, reviews, user }: Produc
           </div>
 
           {/* Pricing */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="font-serif text-2xl font-semibold text-charcoal">
-              ${product.price}
+              {formatCurrency(product.price)}
             </span>
-            {product.originalPrice && (
-              <span className="font-sans text-sm text-stone-400 line-through">
-                ${product.originalPrice}
-              </span>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <>
+                <span className="font-sans text-sm text-stone-400 line-through">
+                  {formatCurrency(product.originalPrice)}
+                </span>
+                <span className="font-sans text-[10px] font-bold text-sage uppercase tracking-wider bg-sage/10 px-2.5 py-1 rounded">
+                  Save {formatCurrency(product.originalPrice - product.price)}
+                </span>
+              </>
             )}
           </div>
 
@@ -368,36 +375,9 @@ export function ProductDetailsClient({ product, related, reviews, user }: Produc
             <h3 className="font-serif text-2xl font-light text-charcoal">Complete the Aesthetic</h3>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
             {related.map((item) => (
-              <div key={item.id} className="flex flex-col gap-4 relative group">
-                <Link
-                  href={`/product/${item.slug}`}
-                  className="relative h-[180px] md:h-[260px] rounded-2xl overflow-hidden shadow-sm bg-sand"
-                >
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-104"
-                    style={{ backgroundImage: `url('${item.images[0]}')` }}
-                  />
-                </Link>
-                <div className="flex flex-col gap-1 px-1">
-                  <div className="flex justify-between items-start gap-2">
-                    <Link
-                      href={`/product/${item.slug}`}
-                      className="font-serif text-xs md:text-sm font-semibold text-charcoal hover:opacity-75 truncate max-w-[70%]"
-                    >
-                      {item.name}
-                    </Link>
-                    <span className="font-sans text-xs font-bold text-stone-600 shrink-0">
-                      ${item.price}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-primary text-primary" />
-                    <span className="text-[10px] font-bold text-stone-500 font-sans">{item.rating}</span>
-                  </div>
-                </div>
-              </div>
+              <ProductCard key={item.id} product={item} />
             ))}
           </div>
         </section>

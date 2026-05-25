@@ -9,6 +9,8 @@ export const metadata = {
   description: "Review your order fulfillment history and COD schedules.",
 };
 
+import { formatCurrency } from "@/lib/utils";
+
 export default async function MyOrdersPage() {
   const user = await getAuthUser();
 
@@ -19,12 +21,6 @@ export default async function MyOrdersPage() {
   const res = await getMyOrdersAction();
   const orders = res.success && res.orders ? res.orders : [];
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(val);
-  };
 
   return (
     <div className="flex flex-col gap-12 w-full animate-fade-up font-sans">

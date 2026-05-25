@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Star, Heart } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { connectDB } from '@/lib/db';
 import Product from '@/models/Product';
 import Category from '@/models/Category';
 import { getAestheticPlaceholder } from '@/lib/cloudinary';
 import HomeHeroCarousel from '@/components/store/HomeHeroCarousel';
+import ProductCard from '@/components/store/ProductCard';
 
 // In Planning mode, let's build an amazing Server Component homepage that queries DB
 export default async function Home() {
@@ -53,36 +54,48 @@ export default async function Home() {
       name: 'Hasu Lounge Chair',
       slug: 'hasu-lounge-chair',
       price: 890,
-      image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80',
+      originalPrice: 1100,
+      images: ['https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80'],
       rating: 4.9,
+      numReviews: 4,
       categoryName: 'Furniture',
+      countInStock: 8,
     },
     {
       id: 'mock-2',
       name: 'Enso Ceramic Tea Set',
       slug: 'enso-ceramic-tea-set',
       price: 180,
-      image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80',
+      originalPrice: null,
+      images: ['https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80'],
       rating: 4.8,
+      numReviews: 3,
       categoryName: 'Ceramics',
+      countInStock: 15,
     },
     {
       id: 'mock-3',
       name: 'Kyoto Pendant Lantern',
       slug: 'kyoto-pendant-lantern',
       price: 340,
-      image: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=800&q=80',
+      originalPrice: 420,
+      images: ['https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=800&q=80'],
       rating: 5.0,
+      numReviews: 8,
       categoryName: 'Lighting',
+      countInStock: 3,
     },
     {
       id: 'mock-4',
       name: 'Wabi Stoneware Vase',
       slug: 'wabi-stoneware-vase',
       price: 120,
-      image: 'https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&w=800&q=80',
+      originalPrice: 150,
+      images: ['https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&w=800&q=80'],
       rating: 4.7,
+      numReviews: 2,
       categoryName: 'Ceramics',
+      countInStock: 12,
     },
   ];
 
@@ -92,9 +105,12 @@ export default async function Home() {
         name: p.name,
         slug: p.slug,
         price: p.price,
-        image: p.images[0],
+        originalPrice: p.originalPrice || null,
+        images: p.images || [],
         rating: p.rating || 4.5,
+        numReviews: p.numReviews || 0,
         categoryName: p.category ? p.category.name : 'Store',
+        countInStock: p.countInStock || 10,
       }))
     : productFallbacks;
 
@@ -193,47 +209,9 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
           {products.map((prod) => (
-            <div
-              key={prod.id}
-              className="flex flex-col gap-4 relative group"
-            >
-              {/* Product Card Image Container */}
-              <Link
-                href={`/product/${prod.slug}`}
-                className="relative h-[220px] md:h-[300px] rounded-2xl overflow-hidden shadow-sm bg-sand"
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-104"
-                  style={{ backgroundImage: `url('${prod.image}')` }}
-                />
-                {/* Visual Glassmorphic Tag */}
-                <div className="absolute top-4 left-4 glass-panel px-3 py-1 rounded-full text-[9px] font-sans font-bold uppercase tracking-wider text-stone-600">
-                  {prod.categoryName}
-                </div>
-              </Link>
-
-              {/* Text Meta */}
-              <div className="flex flex-col gap-1 px-1">
-                <div className="flex justify-between items-start gap-2">
-                  <Link
-                    href={`/product/${prod.slug}`}
-                    className="font-serif text-sm font-semibold text-charcoal hover:opacity-75 transition-opacity truncate max-w-[70%]"
-                  >
-                    {prod.name}
-                  </Link>
-                  <span className="font-sans text-xs font-bold text-stone-600 shrink-0">
-                    ${prod.price}
-                  </span>
-                </div>
-                {/* Rating */}
-                <div className="flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 fill-primary text-primary" />
-                  <span className="text-[10px] font-bold text-stone-500 font-sans">{prod.rating}</span>
-                </div>
-              </div>
-            </div>
+            <ProductCard key={prod.id} product={prod} />
           ))}
         </div>
 
